@@ -4,6 +4,7 @@ The other two scenarios, one with only a token and the other with a date input w
 
 I used the "yargs" module to read the input value directly from the command line. Then considering this input value I got the desired output by calling the above functions in a total of four conditions for four cases.
 
+ - - - -
 
 Below are four testcases for the four scenarios.
 
