@@ -6,34 +6,34 @@ const readLine = require('readline');
 // ALL INPUT
 var getPortfolioValForAToken = (token,date) => new Promise(function (resolve) {
 
-    var outputArr = { "token": "", "amount": 0, "timestamp": 0 };
+    var outputArr = { "token": "", "portfolioValue": 0, "timestamp": 0 };
     var lineReader = csvLineReader();
 
     lineReader.on('line', function (line) {
 
-        var jsonFromLine = {};
-        var lineSplit = line.split(',');
-
-        splitCSVcolumns(jsonFromLine, lineSplit);
+        var jsonFromLine = readLineCSV(line);
 
         if(date != undefined){
             var timeStampToDate = dateFromTimestamp(jsonFromLine);
             if (jsonFromLine.token === token && (timeStampToDate.localeCompare(date) == 0)) {
                 outputArr.token = jsonFromLine.token;
                 if(jsonFromLine.transaction_type=="DEPOSIT"){
-                    outputArr.amount += parseFloat(jsonFromLine.amount);
+                    outputArr.portfolioValue += parseFloat(jsonFromLine.amount);
                 } else {
-                    outputArr.amount -= parseFloat(jsonFromLine.amount);
+                    outputArr.portfolioValue -= parseFloat(jsonFromLine.amount);
                 }
                 outputArr.timestamp = date;
             }
         } else{
+            //TOKEN INPUT
             if (jsonFromLine.token === token) {
-                if (jsonFromLine.timestamp > outputArr.timestamp) {
                     outputArr.token = jsonFromLine.token;
-                    outputArr.amount = jsonFromLine.amount;
-                    outputArr.timestamp = jsonFromLine.timestamp;
-                }
+                    if(jsonFromLine.transaction_type=="DEPOSIT"){
+                        outputArr.portfolioValue += parseFloat(jsonFromLine.amount);
+                    } else {
+                        outputArr.portfolioValue -= parseFloat(jsonFromLine.amount);
+                    }
+                    outputArr.timestamp = 'latest';
             }
         }
     });
@@ -42,7 +42,7 @@ var getPortfolioValForAToken = (token,date) => new Promise(function (resolve) {
         cryptoCompare = getUSDValues();
         cryptoCompare.then(function (result) {
             usdValues = result;
-            outputArr.amount = outputArr.amount * usdValues.ETH.USD;
+            outputArr.portfolioValue = outputArr.portfolioValue * usdValues.ETH.USD;
             resolve(outputArr);
         }, function (err) {
             console.log(err);
@@ -57,15 +57,16 @@ var getPortfolioValPerTokenInUSD = (token,date) => new Promise(function (resolve
 
     var output = [];
 
-    var btcArr = { "token": "BTC", "amount": 0, "timestamp": 0 };
-    var ethArr = { "token": "ETH", "amount": 0, "timestamp": 0 };
-    var xrpArr = { "token": "XRP", "amount": 0, "timestamp": 0 };
+    var btcArr = { "token": "BTC", "portfolioValue": 0, "timestamp": 0 };
+    var ethArr = { "token": "ETH", "portfolioValue": 0, "timestamp": 0 };
+    var xrpArr = { "token": "XRP", "portfolioValue": 0, "timestamp": 0 };
 
     var lineReader = csvLineReader();
 
     lineReader.on('line', (line) => {
 
         var jsonFromLine = readLineCSV(line);
+
         if(token === undefined && date === undefined){
             setValuePerToken(jsonFromLine, ethArr, btcArr, xrpArr);
         } else {
@@ -87,7 +88,7 @@ var getPortfolioValPerTokenInUSD = (token,date) => new Promise(function (resolve
             usdValues = result;
 
             output.forEach(element => {
-                element.amount = element.amount * usdValues.ETH.USD;
+                element.portfolioValue = element.portfolioValue * usdValues.ETH.USD;
             });
 
             resolve(output);
@@ -102,25 +103,25 @@ var getPortfolioValPerTokenInUSD = (token,date) => new Promise(function (resolve
 function setValuePerTokenForDate(jsonFromLine, timeStampToDate, date, btcArr, ethArr, xrpArr) {
     if (jsonFromLine.token === 'BTC' && (timeStampToDate.localeCompare(date) == 0)) {
         if (jsonFromLine.transaction_type == "DEPOSIT") {
-            btcArr.amount += parseFloat(jsonFromLine.amount);
+            btcArr.portfolioValue += parseFloat(jsonFromLine.amount);
         } else {
-            btcArr.amount -= parseFloat(jsonFromLine.amount);
+            btcArr.portfolioValue -= parseFloat(jsonFromLine.amount);
         }
         btcArr.timestamp = date;
 
     } else if (jsonFromLine.token === 'ETH' && (timeStampToDate.localeCompare(date) == 0)) {
         if (jsonFromLine.transaction_type == "DEPOSIT") {
-            ethArr.amount += parseFloat(jsonFromLine.amount);
+            ethArr.portfolioValue += parseFloat(jsonFromLine.amount);
         } else {
-            ethArr.amount -= parseFloat(jsonFromLine.amount);
+            ethArr.portfolioValue -= parseFloat(jsonFromLine.amount);
         }
         ethArr.timestamp = date;
 
     } else if (jsonFromLine.token === 'XRP' && (timeStampToDate.localeCompare(date) == 0)) {
         if (jsonFromLine.transaction_type == "DEPOSIT") {
-            xrpArr.amount += parseFloat(jsonFromLine.amount);
+            xrpArr.portfolioValue += parseFloat(jsonFromLine.amount);
         } else {
-            xrpArr.amount -= parseFloat(jsonFromLine.amount);
+            xrpArr.portfolioValue -= parseFloat(jsonFromLine.amount);
         }
         xrpArr.timestamp = date;
     }
@@ -128,25 +129,31 @@ function setValuePerTokenForDate(jsonFromLine, timeStampToDate, date, btcArr, et
 
 function setValuePerToken(jsonFromLine, ethArr, btcArr, xrpArr) {
     if (jsonFromLine.token === 'ETH') {
-        if (jsonFromLine.timestamp > ethArr.timestamp) {
             ethArr.token = jsonFromLine.token;
-            ethArr.amount = jsonFromLine.amount;
-            ethArr.timestamp = jsonFromLine.timestamp;
-        }
+            if(jsonFromLine.transaction_type=="DEPOSIT"){
+                ethArr.portfolioValue += parseFloat(jsonFromLine.amount);
+            } else {
+                ethArr.portfolioValue -= parseFloat(jsonFromLine.amount);
+            }
+            ethArr.timestamp = 'latest';
     }
     else if (jsonFromLine.token === 'BTC') {
-        if (jsonFromLine.timestamp > btcArr.timestamp) {
             btcArr.token = jsonFromLine.token;
-            btcArr.amount = jsonFromLine.amount;
-            btcArr.timestamp = jsonFromLine.timestamp;
-        }
+            if(jsonFromLine.transaction_type=="DEPOSIT"){
+                btcArr.portfolioValue += parseFloat(jsonFromLine.amount);
+            } else {
+                btcArr.portfolioValue -= parseFloat(jsonFromLine.amount);
+            }
+            btcArr.timestamp = 'latest';
     }
     else if (jsonFromLine.token === 'XRP') {
-        if (jsonFromLine.timestamp > xrpArr.timestamp) {
             xrpArr.token = jsonFromLine.token;
-            xrpArr.amount = jsonFromLine.amount;
-            xrpArr.timestamp = jsonFromLine.timestamp;
-        }
+            if(jsonFromLine.transaction_type=="DEPOSIT"){
+                xrpArr.portfolioValue += parseFloat(jsonFromLine.amount);
+            } else {
+                xrpArr.portfolioValue -= parseFloat(jsonFromLine.amount);
+            }
+            xrpArr.timestamp = 'latest';
     }
 }
 
@@ -192,26 +199,26 @@ async function getUSDValues() {
 
 
 if(args.token === undefined && args.date === undefined){
-    console.log("NO PARAMETERS!, returning the latest portfolio value per token in USD");
+    console.log(`The latest portfolio value per token in USD is here:`);
     getPortfolioValPerTokenInUSD(args.token,args.date).then((result) => { 
         console.log(result); 
     });
 }
 else if (args.date != undefined && args.token === undefined){
-    console.log("A DATE!, returning the portfolio value per token in USD on that date");
+    console.log(`The portfolio value per token in USD on ${args.date} is here:`);
     getPortfolioValPerTokenInUSD(args.token,args.date).then((result) => {
         console.log(result);
     });
     
 }
 else if (args.token != undefined && args.date === undefined){
-    console.log("A TOKEN!, returning the latest portfolio value for that token in USD");
+    console.log(`The latest portfolio value for ${args.token} in USD is here:`);
     getPortfolioValForAToken(args.token,args.date).then((result) => {
         console.log(result);
         });
 }
 else if (args.token != undefined && args.date != undefined){
-    console.log("A TOKEN and A DATE!, returning the portfolio value of that token in USD on that date");
+    console.log(`The portfolio value of ${args.token} in USD on ${args.date} is here:`);
     getPortfolioValForAToken(args.token,args.date).then((result) => {
         console.log(result);
     });
