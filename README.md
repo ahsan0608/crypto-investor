@@ -7,19 +7,24 @@ I used the "yargs" module to read the input value directly from the command line
 
 Below are four testcases for the four scenarios.
 
-Markup : <details>
-           <summary>Given no parameters, return the latest portfolio value per token in USD</summary>
-           <p>node index.js</p>
-         </details>
-Markup : <details>
-           <summary>Given a token, return the latest portfolio value for that token in USD</summary>
-           <p>node index.js --token=BTC</p>
-         </details>
-Markup : <details>
-           <summary>Given a date, return the portfolio value per token in USD on that date</summary>
-           <p>node index.js --date=25/10/2019</p>
-         </details>
-Markup : <details>
-           <summary>Given a date and a token, return the portfolio value of that token in USD on that date</summary>
-           <p>node index.js --date=25/10/2019 --token=BTC</p>
-         </details>
+<details>
+<summary>Given no parameters, return the latest portfolio value per token in USD</summary>
+<p>node index.js</p>
+</details>
+<details>
+<summary>Given a token, return the latest portfolio value for that token in USD</summary>
+<p>node index.js --token=BTC</p>
+</details>
+<details>
+<summary>Given a date, return the portfolio value per token in USD on that date</summary>
+<p>node index.js --date=25/10/2019</p>
+</details>
+<details>
+<summary>Given a date and a token, return the portfolio value of that token in USD on that date</summary>
+<p>node index.js --date=25/10/2019 --token=BTC</p>
+</details>
+
+* Given no parameters, return the latest portfolio value per token in USD
+   * node index.js
+         
+  
