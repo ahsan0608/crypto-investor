@@ -3,3 +3,18 @@ Here, solutions have been sought for a total of four scenarios. I first tried to
 The other two scenarios, one with only a token and the other with a date input with a token, asked for a portfolio value in USD for that token. For this scenario I write a function where I declare a common object for a token. Then read the CSV file line by line as before. Considering the input parameters of the function, I process the data separately for this two cases. Then convert the portfolio value to USD and return it.
 
 I used the "yargs" module to read the input value directly from the command line. Then considering this input value I got the desired output by calling the above functions in a total of four conditions for four cases.
+
+
+Below are four testcases for the four scenarios.
+Given no parameters, return the latest portfolio value per token in USD
+Given a token, return the latest portfolio value for that token in USD
+Given a date, return the portfolio value per token in USD on that date
+Given a date and a token, return the portfolio value of that token in USD on that date
+node index.js
+node index.js --date=25/10/2019 --token=BTC
+node index.js --date=25/10/2019 --token=BTC
+
+Markup : <details>
+           <summary>Title 1</summary>
+           <p>Content 1 Content 1 Content 1 Content 1 Content 1</p>
+         </details>
