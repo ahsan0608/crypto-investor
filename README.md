@@ -25,6 +25,6 @@ Below are four testcases for the four scenarios.
 </details>
 
 * Given no parameters, return the latest portfolio value per token in USD
-   `node index.js`
+   * `node index.js`
          
   
