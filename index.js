@@ -2,8 +2,8 @@ const args = require('yargs').argv;
 const axios = require('axios');
 const readLine = require('readline');
 
-// TOKEN INPUT
-// ALL INPUT
+// Given a token
+// Given a date and a token
 var getPortfolioValForAToken = (token,date) => new Promise(function (resolve) {
 
     var outputArr = { "token": "", "portfolioValue": 0, "timestamp": 0 };
@@ -15,6 +15,7 @@ var getPortfolioValForAToken = (token,date) => new Promise(function (resolve) {
 
         if(date != undefined){
             var timeStampToDate = dateFromTimestamp(jsonFromLine);
+            // Given a date and a token
             if (jsonFromLine.token === token && (timeStampToDate.localeCompare(date) == 0)) {
                 outputArr.token = jsonFromLine.token;
                 if(jsonFromLine.transaction_type=="DEPOSIT"){
@@ -25,7 +26,7 @@ var getPortfolioValForAToken = (token,date) => new Promise(function (resolve) {
                 outputArr.timestamp = date;
             }
         } else{
-            //TOKEN INPUT
+            // Given a token
             if (jsonFromLine.token === token) {
                     outputArr.token = jsonFromLine.token;
                     if(jsonFromLine.transaction_type=="DEPOSIT"){
@@ -51,8 +52,8 @@ var getPortfolioValForAToken = (token,date) => new Promise(function (resolve) {
     });
 })
 
-// NO INPUT
-// DATE INPUT
+// Given no parameters
+// Given a date
 var getPortfolioValPerTokenInUSD = (token,date) => new Promise(function (resolve) {
 
     var output = [];
@@ -68,8 +69,10 @@ var getPortfolioValPerTokenInUSD = (token,date) => new Promise(function (resolve
         var jsonFromLine = readLineCSV(line);
 
         if(token === undefined && date === undefined){
+            //Given no parameters
             setValuePerToken(jsonFromLine, ethArr, btcArr, xrpArr);
         } else {
+            //Given a date
             var timeStampToDate = dateFromTimestamp(jsonFromLine);
             setValuePerTokenForDate(jsonFromLine, timeStampToDate, date, btcArr, ethArr, xrpArr);
         }
@@ -166,7 +169,7 @@ function splitCSVcolumns(jsonFromLine, lineSplit) {
 
 function csvLineReader() {
     return readLine.createInterface({
-        input: require('fs').createReadStream('transactions1.csv')
+        input: require('fs').createReadStream('transactions.csv')
     });
 }
 
@@ -177,13 +180,6 @@ function readLineCSV(line) {
 
     return jsonFromLine;
 }
-
-function dateFromTimestamp(jsonFromLine) {
-    var d = new Date(jsonFromLine.timestamp * 1000);
-    var dateFromCSV = d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear();
-    return dateFromCSV;
-}
-
 
 function dateFromTimestamp(jsonFromLine) {
     var d = new Date(jsonFromLine.timestamp * 1000);
