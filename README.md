@@ -4,10 +4,10 @@ The other two scenarios, one with only a token and the other with a date input w
 
 I used the `yargs` module to read the input values directly from the command line. Then considering this input values I got the desired output by calling the above functions in a total of four conditions for four cases.
 
----
-First install all dependencies in package. json by using the command `npm install`
+## Instructions ##
+First install all dependencies in package.json by using the command `npm install`
 
-Below are four testcases for the four scenarios.
+Here are four testcases for the four scenarios.
 
 - Given no parameters, return the latest portfolio value per token in USD
   - `node index.js`
